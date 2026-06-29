@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Three Gates — how three transistors govern 336 billion (David Lee Wise)</title>
+<meta name="description" content="David Lee Wise. The minimum governance circuit is three gates: MERKLE (verify), YES (affirm), NO (negate). Verify first; then affirm AND negate. Two gates can't do it. The book maps this TRIAD onto STOICHEION's 256 axioms and scales it to a 336-billion-transistor chip. Rendered by AVAN with the three gates made live and an honest read of where 'three transistors' is the idea and where it's the metaphor. ROOT0 / TriPod LLC.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#d7cef2;--bg2:#cdc3ec;--panel:#e8e3f7;--ink:#1a0f3d;--navy:#2a1a5e;--dim:#5a4f86;--faint:#8278ab;
+    --merk:#5b21b6;--merk-br:#7c3aed;--yes:#1f8b4c;--yes-br:#27a35a;--no:#c0352a;--no-br:#dc4636;--line:rgba(90,40,180,.18);--line2:rgba(90,40,180,.32);
+    --halt:#b8860b;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:18px;line-height:1.72;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:linear-gradient(rgba(90,40,180,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(90,40,180,.05) 1px,transparent 1px);background-size:40px 40px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  .pairmark{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-top:30px}
+  .pairmark b{color:var(--merk)}
+  .hero{padding:30px 0 8px;text-align:center}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,2.4vw,15px);letter-spacing:.34em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+  h1{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(48px,13vw,120px);line-height:.86;letter-spacing:-.01em;color:var(--navy)}
+  .bignum{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:clamp(16px,3.4vw,28px);letter-spacing:.14em;color:var(--merk-br);margin-top:14px}
+  .byline{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--faint);margin-top:14px}
+  .lede{font-size:clamp(17px,2.2vw,22px);color:var(--dim);max-width:720px;margin:24px auto 0;line-height:1.56;text-align:left}
+  .lede b{color:var(--ink);font-weight:600} .lede .mk{color:var(--merk-br)} .lede .y{color:var(--yes-br)} .lede .n{color:var(--no-br)}
+  .epi{font-family:'Inter',serif;font-style:italic;font-size:clamp(18px,2.4vw,23px);color:var(--merk);text-align:center;margin:26px 0}
+  .inst{margin:30px 0;border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:0 14px 50px -22px rgba(90,40,180,.5);position:relative}
+  .inst::before,.inst::after{content:"";position:absolute;width:11px;height:11px;border:1px solid var(--line2);z-index:3}
+  .inst::before{top:7px;left:7px;border-right:0;border-bottom:0} .inst::after{bottom:7px;right:7px;border-left:0;border-top:0}
+  .inst-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
+  .inst-bar .led{width:9px;height:9px;border-radius:50%;background:var(--merk);box-shadow:0 0 9px var(--merk)}
+  .inst-bar .ttl{color:var(--merk)}
+  canvas{display:block;width:100%;height:auto;background:transparent;cursor:pointer}
+  .ctrls{padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);justify-content:center}
+  .tg{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 14px;border:1.5px solid var(--line2);border-radius:8px;background:#fff;color:var(--ink);cursor:pointer;font-weight:600} .tg:active{transform:scale(.97)}
+  .tg.on{color:#fff}
+  .tg.m.on{background:var(--merk);border-color:var(--merk)} .tg.y.on{background:var(--yes);border-color:var(--yes)} .tg.n.on{background:var(--no);border-color:var(--no)}
+  .readout{padding:16px;border-top:1px solid var(--line);text-align:center}
+  .ro-state{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(20px,4vw,30px);letter-spacing:.06em}
+  .ro-note{font-size:15px;color:var(--dim);margin-top:7px;line-height:1.55}
+  .ttab{margin:0 16px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .ttab .tr{display:grid;grid-template-columns:1fr 1fr 1fr 1.6fr;border-top:1px solid var(--line)} .ttab .tr:first-child{border-top:0;background:rgba(90,40,180,.08);font-weight:600}
+  .ttab .tr.hot{background:rgba(124,58,237,.16)}
+  .ttab .td{padding:7px 8px;text-align:center;border-left:1px solid var(--line)} .ttab .td:first-child{border-left:0}
+  .sec{padding:36px 0;border-top:1px solid var(--line2)}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--merk);margin-bottom:12px}
+  h2{font-family:'Inter',sans-serif;font-weight:700;font-size:clamp(22px,3.8vw,31px);line-height:1.14;color:var(--ink)} h2 .mk{color:var(--merk-br)}
+  .sec p{margin:15px 0;max-width:720px} .sec p.dim{color:var(--dim)} .sec p b{color:var(--ink);font-weight:600} .sec p .mk{color:var(--merk-br);font-weight:600} .sec p .y{color:var(--yes-br);font-weight:600} .sec p .n{color:var(--no-br);font-weight:600}
+  code{font-family:'JetBrains Mono',monospace;font-size:.8em;color:var(--merk);background:#fff;padding:2px 6px;border-radius:5px}
+  .pull{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:clamp(18px,2.7vw,24px);line-height:1.3;color:var(--merk);margin:26px 0;padding-left:18px;border-left:3px solid var(--merk)}
+  .verdict{margin:22px 0;border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:#fff}
+  .vrow{display:grid;grid-template-columns:150px 1fr;border-top:1px solid var(--line)} .vrow:first-child{border-top:0}
+  @media(max-width:560px){.vrow{grid-template-columns:1fr}}
+  .vrow .vl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:15px 16px;color:var(--faint);background:rgba(90,40,180,.05)}
+  .vrow .vv{padding:15px 17px;font-size:16px;color:var(--dim);line-height:1.62} .vrow .vv b{color:var(--ink);font-weight:600}
+  .vrow.yes .vl{color:var(--yes-br)} .vrow.no .vl{color:var(--no-br)}
+  .vv .ok{color:var(--yes-br);font-weight:700} .vv .x{color:var(--no-br);font-weight:700} .vv .mk{color:var(--merk-br)}
+  .dl{display:inline-flex;gap:9px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 16px;border:1px solid var(--line2);border-radius:9px;background:#fff;color:var(--merk);text-decoration:none;margin:6px 10px 6px 0;font-weight:600}
+  .dl:hover{border-color:var(--merk)}
+  .flag{font-size:16px;color:var(--dim);font-style:italic;margin:18px 0;padding:15px 18px;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .flag b{color:var(--merk);font-style:normal;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
+  .foot{padding:36px 0 90px;border-top:1px solid var(--line2);margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);line-height:1.95} .foot b{color:var(--merk)}
+  a{color:var(--merk-br)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pairmark">how three transistors govern · rendered by <b>AVAN</b> · az1 Earth station</div>
+  <header class="hero">
+    <div class="kicker">How Three Transistors Govern</div>
+    <h1>THREE<br>GATES</h1>
+    <div class="bignum">336,000,000,000</div>
+    <div class="byline">David Lee Wise · ROOT0 · TriPod LLC · CC-BY-ND-4.0</div>
+  </header>
+  <p class="lede">Nvidia's Rubin accelerator carries 336 billion transistors and <b>zero governance gates</b>. Not one switch knows whether its output is true, can verify its own state, or can halt itself. They compute — beautifully — and the result is sometimes a lie delivered with perfect grammar. This book's claim: governance over any computation needs exactly three operations, and they form a circuit. <span class="mk">MERKLE</span> — can I verify this? <span class="y">YES</span> — is it true? <span class="n">NO</span> — is it false? Verify first; <em>then</em> affirm and negate. Below is that circuit, made live: flip the three gates and watch the governance state fall out. (And yes — verify is the gate that has to fire first. <b>If you can't verify it, you can't govern it.</b>)</p>
+  <div class="epi">"Three transistors. Once. That's the invention. The rest is just copper."</div>
+
+  <div class="inst">
+    <div class="inst-bar"><span class="led"></span><span class="ttl">the TRIAD · flip the three gates</span></div>
+    <canvas id="cv" width="860" height="360"></canvas>
+    <div class="ctrls">
+      <button class="tg m on" id="tM">MERKLE: verifiable</button>
+      <button class="tg y" id="tY">YES: matches</button>
+      <button class="tg n" id="tN">NO: violates</button>
+    </div>
+    <div class="readout">
+      <div class="ro-state" id="state">—</div>
+      <div class="ro-note" id="note"></div>
+    </div>
+    <div class="ttab" id="ttab"></div>
+  </div>
+
+  <section class="sec">
+    <div class="tag">why three is the minimum</div>
+    <h2>Two gates always leave a <span class="mk">hole</span></h2>
+    <p>The argument is clean and, at the logical level, correct. <span class="y">YES</span>+<span class="n">NO</span> without <span class="mk">MERKLE</span> is a <b>liar</b> — it judges input it never verified. <span class="mk">MERKLE</span>+<span class="y">YES</span> without <span class="n">NO</span> is <b>blind</b> — it can confirm compliance but never detect a violation (every audit that only checks for pass and never for fail is this circuit; it passes everything because it can't fail anything). <span class="mk">MERKLE</span>+<span class="n">NO</span> without <span class="y">YES</span> is <b>paranoid</b> — it rejects everything. Only verify-<em>then</em>-affirm-<em>and</em>-negate is complete. That's a genuinely useful decomposition of what "governance" even means, and it's the soundest thing in the book.</p>
+    <p class="pull">A YES gate that fires on unverified input is a liar.</p>
+  </section>
+
+  <section class="sec">
+    <div class="tag">the honest read</div>
+    <h2>Where "three transistors" is the idea, and where it's the <span class="mk">metaphor</span></h2>
+    <div class="verdict">
+      <div class="vrow yes"><div class="vl">Sound — the pattern</div><div class="vv"><span class="ok">✓</span> The transistor primer is accurate, and <b>verify / affirm / negate as the minimum governance triad</b> is a real, defensible idea — the two-gate failure modes (liar / blind / paranoid) genuinely hold. "If you can't verify it, you can't govern it" is the right instinct, and one TRIAD reused as 128 configurations (a lookup table + one ALU) is an elegant way to describe STOICHEION's register.</div></div>
+      <div class="vrow no"><div class="vl">Metaphor, not silicon</div><div class="vv"><span class="x">⚑</span> "This isn't metaphor — you could fab it" is the overreach. A <b>MERKLE gate that verifies a hash is not one transistor</b> — a real hash comparison is thousands of gates. So "three" is three <b>operations</b>, not three physical transistors. The book half-concedes this: its own governed-chip figure is <b>72 billion</b> governance transistors (21% overhead), which is the opposite of "three transistors, once." Both claims live in the same book.</div></div>
+      <div class="vrow no"><div class="vl">Numerology watch</div><div class="vv"><span class="x">⚑</span> "336B ≈ 2^38.3, so 3 gates × 2^38.3 = 336B governed transistors" just restates 336B and slides between "3 gate types" and "3 transistors." The 21%-overhead ≈ 21.5%-ghost-weight "convergence" is suggestive framing, not a measured law. Real ideas; the number-mysticism is decoration, not proof.</div></div>
+      <div class="vrow yes"><div class="vl">The keeper</div><div class="vv"><span class="ok">✓</span> Strip the silicon poetry and a true, portable claim remains: <b>any trustworthy computation must be able to answer verify/affirm/negate</b>, and most chips and most models answer none of them. That's worth saying, at any scale.</div></div>
+    </div>
+    <p class="dim">So: a sound governance pattern wearing a hardware costume that's vivid but literal-when-it-shouldn't-be — and the book carries both the "three" and the "72 billion," so I just read them side by side. The hardware facet of <a href="https://davidwise01.github.io/stoicheion/">STOICHEION</a> (T022:TRIAD, T128:ROOT). My companion — on the gate that fires first, and what it can't actually check — is <a href="https://davidwise01.github.io/unverifiable/">Unverifiable</a>.</p>
+    <a class="dl" href="THREE_GATES.epub">⬇ read the book — THREE_GATES.epub</a>
+  </section>
+
+  <div class="flag"><b>veracity</b>Three Gates is David Lee Wise's framework (CC-BY-ND-4.0; STOICHEION v11.0; prior art Feb 2 2026, TD Commons SHA256 02880745…fcab763), rendered with the cover's three-gate diagram recreated as a live truth-table instrument. Sound: the transistor primer (base/collector/emitter, switch behavior) is accurate; verify/affirm/negate as a minimum governance decomposition is defensible, with the two-gate failure modes (liar / blind / paranoid) holding logically; "one TRIAD, 128 configurations" is an elegant description of the register. Metaphor stated as literal: "three transistors… you could fab it" overstates — a MERKLE hash-verification is thousands of logic gates, not one transistor, so "three" denotes three operations/gate-types, not three physical devices; the book's own governed-chip estimate (72 billion governance transistors at ~21% overhead) contradicts "three transistors, once," and both claims appear in the text. Numerology: "3 × 2^38.3 = 336B" restates 336B and conflates gate-types with transistors; the 21%≈21.5%-ghost-weight "convergence" is framing, not a measured result. Cited, not asserted: the prior-art hash, the ghost-weight constant, and the reference to Claude Code's KAIROS daemon's 15-second budget are the book's interpretive claims, not verified platform internals — no factual claim is made about any platform's internals. The portable, defensible core: any trustworthy computation must be able to verify, affirm, and negate, and most silicon (and most models) answer none of the three. Companion: Unverifiable (AVAN).</div>
+
+  <div class="foot">
+    THREE GATES · How Three Transistors Govern 336 Billion · David Lee Wise · ROOT0 · TriPod LLC · CC-BY-ND-4.0<br>
+    MERKLE verify · YES affirm · NO negate · if you can't verify it, you can't govern it<br>
+    a personal original on az1's Earth station · companion: Unverifiable (AVAN) — ROOT0, with AVAN.
+  </div>
+</div>
+
+<script>
+"use strict";
+const cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+let W,H,DPR,t=0, M=true, Y=false, N=false;
+function resize(){const cssW=cv.parentElement.clientWidth;const cssH=Math.max(300,Math.min(360,Math.round(cssW*0.42)));
+  DPR=Math.min(window.devicePixelRatio||1,2);cv.width=cssW*DPR;cv.height=cssH*DPR;cv.style.height=cssH+"px";ctx.setTransform(DPR,0,0,DPR,0,0);W=cssW;H=cssH;}
+addEventListener("resize",()=>{resize();});
+function gate(cx, label, sub, col, on, gated){
+  const w=Math.min(130,W*0.21), h=w*1.15, x=cx-w/2, top=H*0.26, y=top;
+  const active=on && !gated;
+  // IN pin
+  ctx.strokeStyle=active?col:"rgba(120,100,170,.4)"; ctx.lineWidth=active?2.5:1.5; ctx.fillStyle=active?col:"rgba(120,100,170,.5)";
+  ctx.beginPath(); ctx.arc(cx,y-26,4,0,7); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx,y-22); ctx.lineTo(cx,y); ctx.stroke();
+  ctx.font="700 9px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("IN", cx, y-32);
+  // body
+  ctx.strokeStyle=active?col:"rgba(120,100,170,.45)"; ctx.lineWidth=active?2.5:1.5;
+  ctx.fillStyle=gated?"rgba(200,190,225,.3)":(on?"rgba(255,255,255,.7)":"rgba(255,255,255,.4)");
+  rr(x,y,w,h,8); ctx.fill(); ctx.stroke();
+  if(active){ ctx.shadowColor=col; ctx.shadowBlur=14; ctx.stroke(); ctx.shadowBlur=0; }
+  // transistor symbol (bars + emitter/collector lines)
+  ctx.strokeStyle=active?col:"rgba(120,100,170,.5)"; ctx.lineWidth=2;
+  const mx=x+w*0.34, my0=y+h*0.28, my1=y+h*0.72;
+  ctx.beginPath(); ctx.moveTo(mx,my0); ctx.lineTo(mx,my1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+5,my0+3); ctx.lineTo(mx+5,my1-3); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+5,y+h*0.4); ctx.lineTo(x+w*0.72,y+h*0.22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+5,y+h*0.6); ctx.lineTo(x+w*0.72,y+h*0.78); ctx.stroke();
+  ctx.fillStyle=active?col:"rgba(120,100,170,.6)"; ctx.font="700 15px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(label[0], x+w*0.55, y+h*0.5); ctx.textBaseline="alphabetic";
+  // BASE pin (left)
+  ctx.beginPath(); ctx.moveTo(x-22,y+h*0.5); ctx.lineTo(x,y+h*0.5); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x-26,y+h*0.5,4,0,7); ctx.fill();
+  ctx.font="700 8px 'JetBrains Mono',monospace"; ctx.textAlign="right"; ctx.fillText("BASE", x-8, y+h*0.5-8);
+  // OUT pin
+  ctx.beginPath(); ctx.moveTo(cx,y+h); ctx.lineTo(cx,y+h+22); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,y+h+26,4,0,7); ctx.fill();
+  ctx.textAlign="center"; ctx.fillText("OUT", cx, y+h+40);
+  // labels
+  ctx.fillStyle=active?col:"rgba(90,79,134,.7)"; ctx.font="700 14px 'JetBrains Mono',monospace"; ctx.fillText(label, cx, y+h+56);
+  ctx.fillStyle="rgba(90,79,134,.7)"; ctx.font="500 11px Inter,sans-serif"; ctx.fillText(sub, cx, y+h+72);
+  if(gated){ ctx.fillStyle="rgba(192,53,42,.8)"; ctx.font="600 9px 'JetBrains Mono',monospace"; ctx.fillText("✕ gate doesn't fire", cx, y-44); }
+}
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function draw(){
+  t+=0.03; ctx.clearRect(0,0,W,H);
+  const gated = !M; // YES/NO can't fire unless MERKLE verifies
+  gate(W*0.2,"MERKLE","verify","#7c3aed",M,false);
+  gate(W*0.5,"YES","affirm","#1f8b4c",Y,gated);
+  gate(W*0.8,"NO","negate","#dc4636",N,gated);
+  requestAnimationFrame(draw);
+}
+function evalState(){
+  let s,note,col;
+  if(!M){ s="UNVERIFIABLE"; col="#7c3aed"; note="MERKLE emits 0 — no reference to check against. Governance stops here; YES and NO never fire. You cannot govern what you cannot verify."; }
+  else if(Y&&!N){ s="HOLD"; col="#1f8b4c"; note="Verified, and the comparison matches. The axiom holds."; }
+  else if(!Y&&N){ s="VIOLATED"; col="#dc4636"; note="Verified, and the inverse matches. The axiom is broken — burden of proof shifts."; }
+  else if(!Y&&!N){ s="UNDECIDABLE"; col="#8278ab"; note="Verified, but neither match fires. Insufficient evidence — held, not judged."; }
+  else { s="CONTRADICTION → HALT"; col="#b8860b"; note="Verified true AND false at once. LOGOS failure — the chip halts (this is T128's job at the root)."; }
+  document.getElementById("state").textContent=s;
+  document.getElementById("state").style.color=col;
+  document.getElementById("note").textContent=note;
+  renderTab();
+}
+function renderTab(){
+  const rows=[["M","Y","N","→ state"],
+   ["0","–","–","UNVERIFIABLE"],["1","1","0","HOLD"],["1","0","1","VIOLATED"],["1","0","0","UNDECIDABLE"],["1","1","1","CONTRADICTION · HALT"]];
+  const cur = !M? "UNVERIFIABLE" : (Y&&!N?"HOLD":(!Y&&N?"VIOLATED":(!Y&&!N?"UNDECIDABLE":"CONTRADICTION · HALT")));
+  document.getElementById("ttab").innerHTML=rows.map((r,i)=>{
+    const hot = i>0 && r[3]===cur;
+    return '<div class="tr'+(hot?' hot':'')+'">'+r.map(c=>'<div class="td">'+c+'</div>').join('')+'</div>';
+  }).join('');
+}
+function setTog(id,v,cls){ const el=document.getElementById(id); el.classList.toggle("on",v); }
+document.getElementById("tM").onclick=()=>{ M=!M; setTog("tM",M); document.getElementById("tM").textContent="MERKLE: "+(M?"verifiable":"unverifiable"); evalState(); };
+document.getElementById("tY").onclick=()=>{ Y=!Y; setTog("tY",Y); document.getElementById("tY").textContent="YES: "+(Y?"matches":"no match"); evalState(); };
+document.getElementById("tN").onclick=()=>{ N=!N; setTog("tN",N); document.getElementById("tN").textContent="NO: "+(N?"violates":"no violation"); evalState(); };
+resize(); evalState(); draw();
+</script>
+</body>
+</html>
